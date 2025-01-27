@@ -1,0 +1,32 @@
+{
+  "name": "todofy-backend",
+  "version": "1.0.0",
+  "description": "Todofy is a comprehensive task management web application that empowers users to efficiently handle their daily tasks. With robust user authentication, you can securely manage your account. Todofy allows you to create, update, and delete tasks effortlessly, and you can easily mark tasks as completed to keep track of your progress.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node -r dotenv/config src/index.js",
+    "dev": "nodemon -r dotenv/config src/index.js",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [
+    "todofy",
+    "todos",
+    "tasks"
+  ],
+  "author": "Mohammad Bilal Mansuri",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
