@@ -1,0 +1,48 @@
+{
+  "name": "todofy",
+  "version": "1.0.0",
+  "main": "./src/index.js",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i public/input.css -o public/output.css",
+    "start": "npm run build:css && node -r dotenv/config src/index.js",
+    "dev": "npm run build:css && nodemon -r dotenv/config src/index.js"
+  },
+  "keywords": [
+    "todofy",
+    "todos",
+    "tasks",
+    "todo",
+    "todo-manager",
+    "task-manager",
+    "task-management",
+    "task",
+    "task-list",
+    "task-organizer",
+    "task-scheduler",
+    "task-planner",
+    "todo-list"
+  ],
+  "license": "ISC",
+  "type": "module",
+  "description": "Todofy is the ultimate task management app, designed to help you efficiently organize, prioritize, and track your daily tasks. With a sleek and intuitive interface, Todofy ensures you stay focused and motivated to achieve your goals.",
+  "author": {
+    "name": "Mohammad Bilal Mansuri",
+    "url": "https://www.linkedin.com/in/mohammadbilalmansuri"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.6",
+    "nodemon": "^3.1.9",
+    "tailwindcss": "^4.0.6"
+  }
+}
