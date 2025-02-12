@@ -9,10 +9,7 @@ import Todo from "../models/todo.models.js";
 
 export const getTodos = asyncHandler(async (req, res) => {
   const todos = await Todo.find({ owner: req.user?.id });
-
-  if (req.path === "/dashboard") {
-    return res.render("dashboard", { todos });
-  }
+  if (req.path === "/dashboard") return res.render("dashboard", { todos });
 
   if (todos.length === 0) {
     return new ApiResponse(200, "No todos found", []).send(res);
@@ -46,7 +43,6 @@ export const updateTodo = asyncHandler(async (req, res) => {
   );
 
   const todoToUpdate = req.todo;
-
   todoToUpdate.title = title;
   todoToUpdate.description = description || "";
   todoToUpdate.dueTime = dueTime;
