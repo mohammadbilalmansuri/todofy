@@ -5,7 +5,8 @@
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i public/input.css -o public/output.css",
     "start": "npm run build:css && node -r dotenv/config src/index.js",
-    "dev": "npm run build:css && nodemon -r dotenv/config src/index.js"
+    "watch:css": "npx @tailwindcss/cli -i public/input.css -o public/output.css --watch",
+    "dev": "nodemon -r dotenv/config src/index.js"
   },
   "keywords": [
     "todofy",
