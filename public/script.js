@@ -22,8 +22,10 @@
 
   class ApiService {
     static API_BASE_URL = "/api/v1";
+    static isRefreshing = false;
+    static refreshQueue = [];
 
-    static async apiRequest(endpoint, method, bodyData = null) {
+    static async apiRequest(endpoint, method, bodyData = null, retry = true) {
       if (!endpoint || !method) {
         throw new Error("Endpoint and method are required");
       }
@@ -40,11 +42,50 @@
           `${this.API_BASE_URL}${endpoint}`,
           options
         );
-        return await response.json();
+        const data = await response.json();
+
+        if (response.status === 401 && retry) {
+          console.warn("Access token expired, attempting refresh...");
+          return this.handleTokenRefresh(endpoint, method, bodyData);
+        }
+
+        return data;
       } catch (error) {
         renderMessagePopup(error.message);
         console.error(`Error during API request to ${endpoint}:`, error);
         throw error;
+      }
+    }
+
+    static async handleTokenRefresh(endpoint, method, bodyData) {
+      if (this.isRefreshing) {
+        return new Promise((resolve) => {
+          this.refreshQueue.push(() =>
+            resolve(this.apiRequest(endpoint, method, bodyData, false))
+          );
+        });
+      }
+
+      this.isRefreshing = true;
+
+      try {
+        const refreshResponse = await this.refreshAccessToken();
+        if (refreshResponse.success) {
+          console.log("Token refreshed, retrying request...");
+          return this.apiRequest(endpoint, method, bodyData, false);
+        } else {
+          console.error(
+            "Failed to refresh access token, redirecting to login."
+          );
+          window.location.href = "/login";
+        }
+      } catch (error) {
+        console.error("Refresh token invalid or expired, logging out.");
+        window.location.href = "/login";
+      } finally {
+        this.isRefreshing = false;
+        this.refreshQueue.forEach((callback) => callback());
+        this.refreshQueue = [];
       }
     }
 
@@ -61,7 +102,12 @@
     }
 
     static refreshAccessToken() {
-      return this.apiRequest("/users/refresh-access-token", "PATCH");
+      return this.apiRequest(
+        "/users/refresh-access-token",
+        "PATCH",
+        null,
+        false
+      );
     }
 
     static logoutUser() {
