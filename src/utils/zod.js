@@ -11,7 +11,7 @@ const emailValidation = z.string().email("Please enter a valid email address.");
 const passwordValidation = z
   .string()
   .min(8, "Password must be at least 8 characters long.")
-  .max(100, "Password must not exceed 100 characters.")
+  .max(24, "Password must not exceed 24 characters.")
   .regex(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\W_]).*$/,
     "Password must include at least one lowercase letter, one uppercase letter, one number, and one special character."
@@ -64,7 +64,7 @@ export const doValidation = (validator, data) => {
 
   if (!result.success) {
     throw new ApiError(
-      400,
+      422,
       result.error.errors.map((e) => e.message).join(", "),
       result.error.errors.map((e) => e.message)
     );
