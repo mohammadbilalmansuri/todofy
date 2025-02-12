@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { verifyApi } from "../middlewares/auth.middleware.js";
+
 import {
   registerUser,
   loginUser,
@@ -6,14 +8,13 @@ import {
   deleteUser,
   refreshAccessToken,
 } from "../controllers/user.controllers.js";
-import verifyAccess from "../middlewares/auth.middlewares.js";
 
 const userRoutes = Router();
 
 userRoutes.post("/register", registerUser);
 userRoutes.post("/login", loginUser);
-userRoutes.post("/logout", verifyAccess, logoutUser);
-userRoutes.delete("/delete", verifyAccess, deleteUser);
+userRoutes.post("/logout", verifyApi, logoutUser);
+userRoutes.delete("/delete", verifyApi, deleteUser);
 userRoutes.patch("/refresh-access-token", refreshAccessToken);
 
 export default userRoutes;
