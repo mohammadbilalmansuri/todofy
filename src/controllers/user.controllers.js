@@ -7,11 +7,11 @@ import {
   deleteUserValidation,
   doValidation,
 } from "../utils/zod.js";
-import User from "../models/user.models.js";
-import Todo from "../models/todo.models.js";
+import User from "../models/user.model.js";
+import Todo from "../models/todo.model.js";
 import generateAccessAndRefreshTokens from "../utils/generateTokens.js";
 import { REFRESH_TOKEN_SECRET } from "../constants.js";
-import { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = doValidation(
@@ -20,7 +20,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   );
 
   const isUserExist = await User.findOne({ email }).lean();
-  if (isUserExist) throw new ApiError(400, "User already exists");
+  if (isUserExist) throw new ApiError(409, "User already exists");
 
   const createdUser = await User.create({ name, email, password });
 
@@ -93,7 +93,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   };
 
   res.clearCookie("accessToken", options).clearCookie("refreshToken", options);
-  return new ApiResponse(200, "Logout successful.").send(res);
+  return res.status(204).send();
 });
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -101,7 +101,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   if (!refreshToken) throw new ApiError(401, "No refresh token provided");
 
   try {
-    const decoded = verify(refreshToken, REFRESH_TOKEN_SECRET);
+    const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
     const user = await User.findById(decoded._id);
 
     if (!user || refreshToken !== user.refreshToken) {
@@ -129,7 +129,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
     return new ApiResponse(200, "Access token refreshed.", {
       accessToken: newAccessToken,
-      refreshToken: newAccessToken,
+      refreshToken: newRefreshToken,
     }).send(res);
   } catch (error) {
     res.clearCookie("accessToken").clearCookie("refreshToken");
@@ -152,8 +152,8 @@ export const deleteUser = asyncHandler(async (req, res) => {
 
   const deleteResult = await User.deleteOne({ _id: req.user?.id });
 
-  if (deleteResult.deletedCount === 0) {
-    throw new ApiError(500, "Failed to delete user.");
+  if (!deleteResult || deleteResult.deletedCount === 0) {
+    throw new ApiError(500, "User deletion failed.");
   }
 
   await Todo.deleteMany({ owner: req.user?.id });
@@ -164,5 +164,5 @@ export const deleteUser = asyncHandler(async (req, res) => {
   };
 
   res.clearCookie("accessToken", options).clearCookie("refreshToken", options);
-  return new ApiResponse(200, "User deleted successfully.").send(res);
+  return res.status(204).send();
 });

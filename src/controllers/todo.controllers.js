@@ -5,14 +5,14 @@ import {
   todoStatusValidation,
   doValidation,
 } from "../utils/zod.js";
-import Todo from "../models/todo.models.js";
+import Todo from "../models/todo.model.js";
 
 export const getTodos = asyncHandler(async (req, res) => {
   const todos = await Todo.find({ owner: req.user?.id });
   if (req.path === "/dashboard") return res.render("dashboard", { todos });
 
   if (todos.length === 0) {
-    return new ApiResponse(200, "No todos found", []).send(res);
+    return new ApiResponse(404, "No todos found", []).send(res);
   }
 
   return new ApiResponse(200, "Todos fetched successfully", todos).send(res);
@@ -70,5 +70,5 @@ export const toggleTodoStatus = asyncHandler(async (req, res) => {
 
 export const deleteTodo = asyncHandler(async (req, res) => {
   await req.todo.deleteOne();
-  return new ApiResponse(200, "Todo deleted successfully").send(res);
+  return res.status(204).send(res);
 });
